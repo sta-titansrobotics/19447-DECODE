@@ -19,7 +19,7 @@ public class DriveTrain {
         BR = hwMap.get(DcMotor.class, "backRightMotor");
         BL = hwMap.get(DcMotor.class, "backLeftMotor");
 
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
