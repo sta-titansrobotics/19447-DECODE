@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.NorthYork.mechanisms;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 public class ShooterTestOpMode extends LinearOpMode {
@@ -24,15 +26,15 @@ public class ShooterTestOpMode extends LinearOpMode {
 
         while (opModeIsActive()) {
             if(gamepad1.dpad_up){
-                targetVelocity += 100;
+                targetVelocity -= 100;
                 sleep(100);
             }else if (gamepad1.dpad_down){
-                targetVelocity -= 100;
+                targetVelocity += 100;
                 sleep(100);
             }else if(gamepad1.x){
                 targetVelocity = 0;
             }
-            if(targetVelocity < 0){
+            if(targetVelocity > 0){
                 targetVelocity = 0;
             }
             shootMotor.setVelocity(targetVelocity);

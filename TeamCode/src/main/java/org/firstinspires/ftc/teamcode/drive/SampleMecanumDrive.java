@@ -100,10 +100,13 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
+        // COMMENT OUT IF USING 3 WHEEL ODO
+
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
+
 
         leftFront = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
         leftRear = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
@@ -138,7 +141,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+        // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels)); //THREE WHEEL ODO
+        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this)); //TWO WHEEL ODO
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -298,14 +302,18 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setPower(v3);
     }
 
+    //comment return 0 if 2 wheel odo. comment return imu if 3 wheel odo
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        //return 0;
     }
 
+    //comment return 0 if 2 wheel odo. comment return imu if 3 wheel odo
     @Override
     public Double getExternalHeadingVelocity() {
         return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        //return 0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

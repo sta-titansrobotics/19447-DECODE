@@ -123,10 +123,10 @@ public class FieldCentricTeleOp extends LinearOpMode {
      */
     private void initializeHardware() {
         // Initialize drive motors
-        frontLeft  = hardwareMap.get(DcMotorEx.class, "front_left");
-        frontRight = hardwareMap.get(DcMotorEx.class, "front_right");
-        backLeft   = hardwareMap.get(DcMotorEx.class, "back_left");
-        backRight  = hardwareMap.get(DcMotorEx.class, "back_right");
+        frontLeft  = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
+        frontRight = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
+        backLeft   = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
+        backRight  = hardwareMap.get(DcMotorEx.class, "backRightMotor");
 
         // Set motor directions (standard mecanum configuration)
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -149,8 +149,8 @@ public class FieldCentricTeleOp extends LinearOpMode {
         // Initialize IMU
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
     }
 

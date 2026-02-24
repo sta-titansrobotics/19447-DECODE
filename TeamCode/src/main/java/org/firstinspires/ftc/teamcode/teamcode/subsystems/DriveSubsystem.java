@@ -52,10 +52,10 @@ public class DriveSubsystem {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        frontLeft  = hw.get(DcMotorEx.class, "front_left");
-        frontRight = hw.get(DcMotorEx.class, "front_right");
-        backLeft   = hw.get(DcMotorEx.class, "back_left");
-        backRight  = hw.get(DcMotorEx.class, "back_right");
+        frontLeft  = hw.get(DcMotorEx.class, "frontLeftMotor");
+        frontRight = hw.get(DcMotorEx.class, "frontRightMotor");
+        backLeft   = hw.get(DcMotorEx.class, "backLeftMotor");
+        backRight  = hw.get(DcMotorEx.class, "backRightMotor");
 
         // Standard mecanum motor directions
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);

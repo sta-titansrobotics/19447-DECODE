@@ -8,59 +8,75 @@ package com.teamcode;
  * Copy these device names EXACTLY into Driver Station Robot Configuration.
  * Spelling and capitalization must match perfectly!
  *
- * CONTROL HUB / EXPANSION HUB:
+ * EXPANSION HUB (Drive Motors - run without encoders):
  * ┌────────────────────────────────────────────────────────────────────────┐
  * │ Motors (DcMotorEx):                                                    │
- * │   ✓ front_left    - Mecanum drive (REV/goBILDA motor)                 │
- * │   ✓ front_right   - Mecanum drive (REV/goBILDA motor)                 │
- * │   ✓ back_left     - Mecanum drive (REV/goBILDA motor)                 │
- * │   ✓ back_right    - Mecanum drive (REV/goBILDA motor)                 │
- * │   ✓ odo_left      - Odometry encoder (goBILDA 8192 CPR Through-Bore)  │
- * │   ✓ odo_right     - Odometry encoder (goBILDA 8192 CPR Through-Bore)  │
- * │   ○ odo_strafe    - Strafe encoder [OPTIONAL - for 3-wheel odometry]  │
- * │   ○ intake        - Intake motor (DcMotor, any FTC-legal motor)        │
- * │   ○ shooter       - Shooter flywheel (DcMotorEx with encoder)          │
- * │   ○ m4            - Feeder motor (DcMotor, pushes balls to shooter)    │
+ * │   Port 0: frontRightMotor - Mecanum drive (goBILDA 5203 series)       │
+ * │            ↳ Encoder: Left odometry pod (REV Through Bore 8192 CPR)   │
+ * │   Port 1: backRightMotor  - Mecanum drive (goBILDA 5203 series)       │
+ * │            ↳ Encoder: Right odometry pod (REV Through Bore 8192 CPR)  │
+ * │   Port 2: frontLeftMotor  - Mecanum drive (goBILDA 5203 series)       │
+ * │            ↳ Encoder: Strafe odometry pod (REV Through Bore 8192 CPR) │
+ * │   Port 3: backLeftMotor   - Mecanum drive (goBILDA 5203 series)       │
+ * │                                                                        │
+ * │   ⚠️ NOTE: Port 0 encoder contact is LOOSE - may affect accuracy!     │
+ * │   ⚠️ CODE USES MOTOR NAMES to read encoders (e.g., "frontRightMotor") │
+ * └────────────────────────────────────────────────────────────────────────┘
+ *
+ * CONTROL HUB (Manipulator Motors):
+ * ┌────────────────────────────────────────────────────────────────────────┐
+ * │ Motors (DcMotorEx):                                                    │
+ * │   Port 0: shootMotor   - Shooter flywheel (goBILDA 5203 series)       │
+ * │   Port 1: intakeMotor  - Intake roller (goBILDA 5203 series)          │
+ * │   Port 2: indexMotor   - Feeder/indexer (goBILDA 5203 series)         │
  * │                                                                        │
  * │ IMU:                                                                   │
- * │   ✓ imu           - REV Internal IMU (BHI260AP)                        │
- * │                                                                        │
- * │ Camera (USB):                                                          │
- * │   ○ Webcam 1      - UVC webcam (Logitech C270/C920 recommended)       │
+ * │   I2C Bus 0: imu       - REV Internal IMU (BHI260AP)                  │
+ * └────────────────────────────────────────────────────────────────────────┘
+ *
+ * USB DEVICES:
+ * ┌────────────────────────────────────────────────────────────────────────┐
+ * │ Camera:                                                                │
+ * │   Webcam 1             - Logitech C270 (for AprilTag detection)       │
  * └────────────────────────────────────────────────────────────────────────┘
  *
  * WIRING NOTES:
- *   • Odometry encoders plug into motor ports (we only read position)
- *   • Use short, shielded cables for encoders to reduce I2C noise
- *   • IMU orientation: Logo UP, USB port facing FORWARD
- *   • Test EACH device in Driver Station before running OpModes
+ *   • Odometry encoders use drivetrain motor encoder ports (position only)
+ *   • Keep encoder cables < 12 inches to minimize I2C noise
+ *   • IMU orientation: Logo LEFT, USB port facing UP
+ *   • Test EACH device shows "OK" in Driver Station before running OpModes
  *
- * CALIBRATION PROCEDURE:
- *   1. TRACK_WIDTH_IN: Measure center-to-center distance between left/right odo wheels
- *   2. LATERAL_WHEEL_OFFSET_IN: Measure from robot center to strafe wheel
- *   3. WHEEL_DIAMETER_IN: Measure odo wheel diameter with calipers
- *   4. TICKS_PER_REV: Verify encoder spec (goBILDA 8192 CPR = 8192 ticks/rev)
- *   5. Test odometry by pushing robot 12" forward → check telemetry shows ~12"
+ * CALIBRATION VALUES (ALREADY MEASURED):
+ *   ✓ TRACK_WIDTH_IN: 11.0 inches (left/right odo wheel spacing)
+ *   ✓ LATERAL_WHEEL_OFFSET_IN: -1.25 inches (robot center → strafe wheel)
+ *   ✓ WHEEL_DIAMETER_IN: 0.748031 inches (odometry wheel diameter)
+ *   ✓ TICKS_PER_REV: 8192 (REV Through Bore @ 8192 CPR)
+ *
+ * SHOOTER RPM VALUES (MEASURED):
+ *   ✓ Idle/Low: 1100 RPM
+ *   ✓ Medium: 1700 RPM
+ *   ✓ Long: 2000 RPM
  */
 
 public final class Constants {
     private Constants() {}
 
     // ========== HARDWARE DEVICE NAMES (must match Robot Configuration) ==========
-    public static final String ENC_LEFT   = "odo_left";
-    public static final String ENC_RIGHT  = "odo_right";
-    public static final String ENC_STRAFE = "odo_strafe"; // set null/"" to disable (2-wheel mode)
+    // Odometry encoders use the motor port names (encoders plugged into motor ports)
+    public static final String ENC_LEFT   = "frontRightMotor";  // Port 0 encoder
+    public static final String ENC_RIGHT  = "backRightMotor";   // Port 1 encoder
+    public static final String ENC_STRAFE = "frontLeftMotor";   // Port 2 encoder
     public static final String IMU_NAME   = "imu";
 
     // Encoder configuration
-    // For goBILDA 8192 CPR through-bore: 8192 ticks per wheel revolution.
+    // For REV Through Bore Encoder @ 8192 CPR
     public static final double TICKS_PER_REV = 8192.0;
-    public static final double WHEEL_DIAMETER_IN = 2.0;     // inches
+    public static final double WHEEL_DIAMETER_IN = 0.748031;     // inches (MEASURED)
     public static final double GEAR_RATIO = 1.0;            // wheel revs per encoder rev
 
-    // Geometry (inches)
-    public static final double TRACK_WIDTH_IN = 13.5;       // distance between left/right odometry wheels
-    public static final double LATERAL_WHEEL_OFFSET_IN = 7.5; // strafe wheel offset from robot center
+    // Geometry (inches) - MEASURED VALUES
+    public static final double TRACK_WIDTH_IN = 11.0;       // distance between left/right odometry wheels
+    public static final double LATERAL_WHEEL_OFFSET_IN = -1.25; // strafe wheel offset from robot center
 
     // Encoder direction multipliers (+1 or -1) to make forward = +X, left wheel increasing forward
     public static final int LEFT_DIR   = +1;
@@ -107,7 +123,7 @@ public final class Constants {
 
     // ========== APRILTAG AUTONOMOUS (BALL ROUTE) ==========
     // Device names
-    public static final String INTAKE_MOTOR_NAME = "intake";
+    public static final String INTAKE_MOTOR_NAME = "intakeMotor";
     public static final String WEBCAM_NAME = "Webcam 1";
 
     // Starting pose for AprilTag auto
@@ -179,20 +195,28 @@ public final class Constants {
     public static final double INTAKE_POWER_EJECT = -0.6;
 
     // ========== TELEOP HARDWARE ==========
-    public static final String SHOOTER_MOTOR_NAME = "shooter";
-    public static final String FEEDER_MOTOR_NAME = "m4";
+    public static final String SHOOTER_MOTOR_NAME = "shootMotor";
+    public static final String FEEDER_MOTOR_NAME = "indexMotor";
+
+    // CR Servos (Continuous Rotation)
+    public static final String CR_SERVO_1_NAME = "left_Roller";
+    public static final String CR_SERVO_2_NAME = "right_Roller";
 
     // ========== SHOOTER CONFIGURATION ==========
     // Flywheel speeds in RPM
-    // For REV HD Hex Motor: ~2800 RPM max
-    // Adjust based on actual motor specs
-    public static final double SHOOTER_SPEED_LOW = 1200.0;      // RPM (conservative for close shots)
-    public static final double SHOOTER_SPEED_MEDIUM = 1800.0;   // RPM (default idle)
-    public static final double SHOOTER_SPEED_MAX = 2400.0;      // RPM (max power shots)
+    // UPDATED to match measured values from hardware testing
+    public static final double SHOOTER_SPEED_LOW = 200.0;      // RPM (idle/close shots) - MEASURED
+    public static final double SHOOTER_SPEED_MEDIUM = 250.0;   // RPM (medium distance) - MEASURED
+    public static final double SHOOTER_SPEED_MAX = 300.0;      // RPM (long distance shots) - MEASURED
 
-    // Convert RPM to encoder ticks/sec (goBILDA 5202 motor: 537.7 PPR)
-    public static final double SHOOTER_TICKS_PER_REV = 537.7;
-    public static final double SHOOTER_RPM_TO_TPS = SHOOTER_TICKS_PER_REV / 60.0;
+    // Convert RPM to encoder ticks/sec
+    // FIXED: Changed from 5202 (537.7) to 5203 (384.5) to match actual motor hardware
+    // NOTE: Verify your motor type and update SHOOTER_TICKS_PER_REV accordingly:
+    //   - goBILDA 5202 series: 537.7 PPR
+    //   - goBILDA 5203 series: 384.5 PPR
+    //   - REV HD Hex Motor: 2240 CPR
+    public static final double SHOOTER_TICKS_PER_REV = 384.5;  // FIXED: goBILDA 5203 series (was 5202)
+    public static final double SHOOTER_RPM_TO_TPS = SHOOTER_TICKS_PER_REV;
 
     // PIDF gains for shooter velocity control (tune on actual hardware)
     public static final double SHOOTER_KP = 5.0;
@@ -207,6 +231,10 @@ public final class Constants {
     public static final double FEEDER_SHOOT_POWER = 0.5;  // Half speed during shooting
     public static final double FEEDER_RAMP_TIME_MS = 150; // Ramp up time to avoid jamming
 
+    // ========== CR SERVO CONFIGURATION ==========
+    // Continuous rotation servo speeds (0.0 = full reverse, 0.5 = stop, 1.0 = full forward)
+    public static final double CR_SERVO_SPEED = 1.0;  // Run at full speed forward
+
     // ========== TELEOP CONTROL THRESHOLDS ==========
     public static final double TRIGGER_THRESHOLD = 0.1;  // Minimum trigger press to activate
     public static final double JOYSTICK_DEADZONE = 0.05; // Ignore tiny joystick drift
@@ -214,4 +242,5 @@ public final class Constants {
     // ========== DRIVE SPEEDS ==========
     public static final double TELEOP_DRIVE_SPEED_NORMAL = 1.0;  // Full speed
     public static final double TELEOP_DRIVE_SPEED_PRECISION = 0.4; // Slow mode (if bumper held)
+    public static final double PARK_MODE_SPEED_FACTOR = 0.4;  // Park mode speed (40% of full)
 }

@@ -92,10 +92,13 @@ public class AprilTagSelector {
         }
 
         if (best != null) {
-            // Hysteresis: only switch tags if significantly better or same as stable tag
+            // Hysteresis: only switch tags if:
+            // 1. No stable tag yet (first detection)
+            // 2. Same as current stable tag (reinforcement)
+            // 3. Significantly better than minimum confidence threshold (prevents flicker)
             boolean shouldSwitch = (stableTagId == -1) ||
                                    (best.id == stableTagId) ||
-                                   (best.decisionMargin > bestMargin + APRILTAG_TAG_SWITCH_MARGIN);
+                                   (bestMargin > APRILTAG_MIN_CONFIDENCE + APRILTAG_TAG_SWITCH_MARGIN);
 
             if (shouldSwitch) {
                 lastSeenTagId = best.id;

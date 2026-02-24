@@ -69,8 +69,8 @@ public class Odometry {
         if (USE_IMU) {
             imu = hw.get(IMU.class, IMU_NAME);
             IMU.Parameters params = new IMU.Parameters(new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.UP));
             imu.initialize(params);
             imu.resetYaw();
             imuHeadingRad = 0.0;

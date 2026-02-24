@@ -15,16 +15,45 @@ public class Encoder {
     private int lastPos;
     private boolean initialized = false;
 
+    // Test seam: optional injected reader to allow unit tests to run without SDK
+    public interface MotorReader {
+        int getCurrentPosition();
+    }
+
+    private final MotorReader testReader;
+
     public Encoder(HardwareMap hw, String name, int directionMultiplier) {
-        this.motor = name == null || name.isEmpty() ? null : hw.get(DcMotorEx.class, name);
+        this(hw, name, directionMultiplier, null);
+    }
+
+    // Package-private constructor for tests to inject MotorReader
+    Encoder(HardwareMap hw, String name, int directionMultiplier, MotorReader reader) {
+        DcMotorEx m = null;
+        try {
+            m = (name == null || name.isEmpty()) ? null : hw.get(DcMotorEx.class, name);
+        } catch (Exception e) {
+            // Motor not found in config - encoder will be disabled
+            m = null;
+        }
+        this.motor = m;
         this.dir = directionMultiplier;
+        this.testReader = reader;
         if (motor != null) {
-            this.lastPos = motor.getCurrentPosition();
+            try {
+                this.lastPos = (testReader != null ? testReader.getCurrentPosition() : motor.getCurrentPosition()) * dir;
+                this.initialized = true;
+            } catch (Exception e) {
+                // Failed to read encoder - treat as not present
+                this.initialized = false;
+            }
+        } else if (testReader != null) {
+            // Test seam: allow tests to create an Encoder without a real motor
+            this.lastPos = testReader.getCurrentPosition() * dir;
             this.initialized = true;
         }
     }
 
-    public boolean isPresent() { return motor != null; }
+    public boolean isPresent() { return initialized && (motor != null || testReader != null); }
 
     /** @return Current raw encoder position in ticks (direction-adjusted) */
     public int getRaw() { return isPresent() ? motor.getCurrentPosition() * dir : 0; }
@@ -34,7 +63,7 @@ public class Encoder {
      */
     public int getDeltaTicks() {
         if (!isPresent()) return 0;
-        int cur = motor.getCurrentPosition() * dir;
+        int cur = (testReader != null ? testReader.getCurrentPosition() : motor.getCurrentPosition()) * dir;
         int dt = cur - lastPos;
         lastPos = cur;
 
