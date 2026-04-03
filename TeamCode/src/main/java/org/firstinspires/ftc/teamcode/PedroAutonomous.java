@@ -225,10 +225,16 @@ public class PedroAutonomous extends OpMode {
                 }
                 break;
             case 6:
+                if (pathTimer.seconds() > 3.5) {
+                    follower.followPath(paths.Path6);
+                    setPathState(7);
+                }
+                /*
                 if (!follower.isBusy()) {
                     follower.followPath(paths.Path6);
                     setPathState(7);
                 }
+                */
                 break;
             case 7:
                 if (!follower.isBusy()) {
@@ -243,10 +249,16 @@ public class PedroAutonomous extends OpMode {
                 }
                 break;
             case 9:
+                if (pathTimer.seconds() > 4.5) {
+                    follower.followPath(paths.Path9);
+                    setPathState(10);
+                }
+                /*
                 if (!follower.isBusy()) {
                     follower.followPath(paths.Path9);
                     setPathState(10);
                 }
+                */
                 break;
             case 10:
                 if (!follower.isBusy()) {
@@ -261,10 +273,16 @@ public class PedroAutonomous extends OpMode {
                 }
                 break;
             case 12:
+                if (pathTimer.seconds() > 5.5) {
+                    follower.followPath(paths.Path12);
+                    setPathState(13);
+                }
+                /*
                 if (!follower.isBusy()) {
                     follower.followPath(paths.Path12);
                     setPathState(13); // Transition to a finished state
                 }
+                */
                 break;
             case 13:
                 // The robot has finished all paths. We do nothing here.
